@@ -1,92 +1,212 @@
-<p align="center">
-  <a href="https://github.com/teknovizier/tekla_mcp_server">
-    <img src="https://github.com/teknovizier/tekla_mcp_server/raw/main/assets/tekla_mcp_server_logo_small.png" alt="Tekla MCP Server">
-  </a>
-</p>
-
-<p align="center">
-  <strong>
-    Tekla and AI. Made Easy.
-  </strong>
-</p>
-
-<p align="center">
-  <a href="https://github.com/teknovizier/tekla_mcp_server/actions/workflows/python-tests.yml"><img
-    src="https://github.com/teknovizier/tekla_mcp_server/actions/workflows/python-tests.yml/badge.svg"
-    alt="Python Tests"
-  /></a>
-  <a href="https://github.com/teknovizier/tekla_mcp_server/blob/main/docs/quickstart.md"><img
-    src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue?style=flat&logo=python"
-    alt="Python versions"
-  /></a>
-  <a href="https://github.com/teknovizier/tekla_mcp_server/blob/main/LICENSE"><img
-    src="https://img.shields.io/github/license/teknovizier/tekla_mcp_server?color=green"
-    alt="License"
-  /></a>
-</p>
-
 # Tekla MCP Server
 
-This server facilitates interaction with **Tekla Structures**, helping users automate and accelerate modeling workflows. It acts as a bridge between AI agents or MCP-compatible clients and Tekla, exposing resources and tools for selection, component insertion, property management and view operations.
+Tekla Structures ile yapay zeka ajanlarını birbirine bağlayan **Model Context Protocol (MCP)** sunucusu. Claude veya başka bir AI aracına doğal dil komutlarıyla Tekla modelini yönetme yetkisi verir.
 
-> #### 📌 What is MCP?
->
-> *MCP* stands for **Model Context Protocol**, and it is a communication protocol introduced by Anthropic to enable more efficient and secure interactions between large language models and other systems, such as human users or other AI agents.
->
-> **Tekla MCP Server** uses AI-powered natural language processing to make interactions more intuitive, allowing user to work with tools using plain text.
+## Ne Yapar?
 
-To use this server, one must first install and configure an MCP client.
+```
+Sen → "Tüm duvarları seç ve kaldırma ankrajı yerleştir"
+  ↓
+Claude → MCP Sunucu → Tekla Structures (açık model)
+```
 
-### Features
+Desteklenen işlemler: eleman seçimi, özellik okuma/yazma, bileşen yerleştirme/kaldırma, görünüm kontrolü, boolean kesim, UDA yönetimi.
 
-- **Modular Architecture**: Powered by FastMCP 3.0, with toolset organization through modular providers (Selection, View, Properties, Components, Operations).
+---
 
-- **Resource Discovery**: Auto‑detection of available filters, macros, components, and custom requirements and instructions.
+## Gereksinimler
 
-- **Component Handler Plugin System**: Flexible plugin model for Tekla components with lifecycle hooks, e.g., `Lifting Anchors` component select anchors based on element weight and auto‑calculates anchor placement according to center of gravity.
+| Gereksinim | Versiyon |
+|---|---|
+| Tekla Structures | 2019 – 2025 (herhangi bir versiyon) |
+| Python | 3.11 – 3.13 (3.14 **desteklenmez**) |
+| [uv](https://docs.astral.sh/uv/) | herhangi bir versiyon |
 
-- **LLM‑Powered Component Property Understanding**: Natural language mapping like "concrete cover thickness" → actual Tekla component property.
+> **Not:** `pythonnet` kütüphanesi Python 3.14 ile uyumlu değildir.
 
-- **Semantic Attribute Mapping**: Hybrid semantic system (MiniLM + LLM fallback) for mapping user‑friendly names to Tekla attributes.
+---
 
+## Kurulum
 
-See [Reference](docs/reference.md) for complete list of tools and resources.
+### 1. Repoyu klonla
 
-### Compatibility
+```bash
+git clone https://github.com/zekeriyakaraca-pixel/teklamcp.git
+cd teklamcp
+```
 
-The server was tested to work with **only Tekla 2022** and may not be compatible with other versions of Tekla Structures.
+### 2. Python 3.13 kur (uv ile)
 
-Verified to work correctly with [DeepChat](https://deepchat.thinkinai.xyz) and [chatmcp](https://github.com/daodao97/chatmcp) clients, along with the following language models:
-- GPT-4o
-- DeepSeek
-- Gemini 2.0 Flash
-- Gemini 2.5 Flash
-- Qwen3
-- gpt-oss
+```bash
+uv python install 3.13
+```
 
-## Installation
+### 3. Bağımlılıkları yükle
 
-For complete setup instructions, see [Quickstart Guide](docs/quickstart.md).
+```bash
+uv pip install --python 3.13 -r requirements.txt
+```
 
+### 4. Config dosyalarını oluştur
 
-## Documentation
+```bash
+# Linux / macOS
+cp config/settings.sample.json          config/settings.json
+cp config/element_types.sample.json     config/element_types.json
+cp config/semantic_overrides.sample.json config/semantic_overrides.json
+cp config/base_components.sample.json   config/base_components.json
+cp .env.example .env
+```
 
-| Guide | Description |
-|-------|-------------|
-| [Reference](docs/reference.md) | Tools and resources reference |
-| [Quickstart](docs/quickstart.md) | Setup and first steps |
-| [Configuration](docs/configuration.md) | Config files and environment variables |
-| [Testing](docs/testing.md) | Running tests |
-| [Distribution](docs/distribution.md) | Building portable binary |
+```cmd
+:: Windows (cmd)
+copy config\settings.sample.json         config\settings.json
+copy config\element_types.sample.json    config\element_types.json
+copy config\semantic_overrides.sample.json config\semantic_overrides.json
+copy config\base_components.sample.json  config\base_components.json
+copy .env.example .env
+```
 
-## License
+### 5. Tekla yolunu ayarla
 
-This software is open-source and released under the **GPLv3 license**. You are free to use, modify, and distribute it, as long as all modifications remain open-source under the same license.
+`config/settings.json` dosyasını aç ve `tekla_path` değerini kendi Tekla versiyonuna göre güncelle:
 
-For full details, please refer to the [LICENSE](LICENSE) file included in this repository.
+```json
+{
+  "tekla_path": "C:\\Program Files\\Tekla Structures\\2023.0\\bin"
+}
+```
 
-## Disclaimer
+| Tekla Versiyonu | tekla_path |
+|---|---|
+| 2021 | `C:\\Program Files\\Tekla Structures\\2021.0\\bin` |
+| 2022 | `C:\\Program Files\\Tekla Structures\\2022.0\\bin` |
+| 2023 | `C:\\Program Files\\Tekla Structures\\2023.0\\bin` |
+| 2024 | `C:\\Program Files\\Tekla Structures\\2024.0\\bin` |
 
-This software is provided *as is*, without any warranties or guarantees of functionality, reliability, or security. The developer assumes **no responsibility** for any damages, data loss, or other issues arising from its use.
+---
 
-Use at your own risk.
+## Claude'a Bağlama
+
+### Claude Desktop
+
+`claude_desktop_config.json` dosyasına ekle:
+
+```json
+{
+  "mcpServers": {
+    "tekla": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--python", "3.13",
+        "python",
+        "C:\\<REPO_YOLU>\\src\\tekla_mcp_server\\mcp_server.py"
+      ]
+    }
+  }
+}
+```
+
+> `<REPO_YOLU>` yerine kendi bilgisayarındaki tam klasör yolunu yaz.
+
+### Claude Code
+
+Proje kökünde `.mcp.json` dosyası oluştur:
+
+```json
+{
+  "mcpServers": {
+    "tekla": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--python", "3.13",
+        "python",
+        "src/tekla_mcp_server/mcp_server.py"
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Sunucuyu Manuel Başlatma
+
+```bash
+uv run --python 3.13 python src/tekla_mcp_server/mcp_server.py
+```
+
+Tekla Structures'ın açık ve bir model yüklenmiş olması gerekir.
+
+---
+
+## Mevcut Araçlar
+
+| Araç | Açıklama |
+|---|---|
+| `select_elements_by_filter` | Tür, isim, profil, malzeme, faz kriterlerine göre eleman seç |
+| `select_elements_by_filter_name` | Kayıtlı Tekla filtresiyle eleman seç |
+| `select_elements_by_guid` | GUID listesiyle eleman seç |
+| `select_elements_assemblies_or_main_parts` | Seçili elemanların montajını veya ana parçasını seç |
+| `get_elements_properties` | Seçili elemanların özelliklerini getir |
+| `set_elements_properties` | Seçili elemanlara özellik ve UDA yaz |
+| `clear_elements_udas` | UDA değerlerini temizle |
+| `compare_elements` | İki elemanı karşılaştır, farkları listele |
+| `draw_elements_labels` | Görünümde geçici etiket çiz |
+| `zoom_to_selection` | Seçili elemanlara zoom yap |
+| `show_only_selected` | Yalnızca seçili elemanları göster |
+| `put_components` | Bileşen yerleştir (Lifting Anchor vb.) |
+| `remove_components` | Bileşen kaldır |
+| `cut_elements_with_zero_class_parts` | Sınıf 0 parçalarla boolean kesim yap |
+| `run_macro` | Tekla makrosu çalıştır |
+
+---
+
+## Config Dosyaları
+
+| Dosya | Amaç |
+|---|---|
+| `config/settings.json` | Tekla kurulum yolu, embedding modeli, eşik değerleri |
+| `config/element_types.json` | Element tipi adı → Tekla sınıf numarası eşlemesi |
+| `config/semantic_overrides.json` | Sabit kodlu özellik adı eşlemeleri (ML'i atlar) |
+| `config/base_components.json` | Kullanılabilir bileşenler ve işleyici tanımları |
+
+> `config/*.json` dosyaları `.gitignore`'da tutulur — her kullanıcı kendi ortamına göre oluşturur, commit edilmez.
+
+---
+
+## Testler
+
+```bash
+# Unit testler (Tekla kurulu olmadan çalışır)
+uv run --python 3.13 pytest tests/unit/
+
+# Tek test dosyası
+uv run --python 3.13 pytest tests/unit/test_models.py -xvs
+```
+
+> Fonksiyonel testler (`tests/functional/`) gerçek Tekla modelini değiştirir — yalnızca test ortamında çalıştır.
+
+---
+
+## Sık Karşılaşılan Sorunlar
+
+**`ModuleNotFoundError: No module named 'clr'`**
+→ `uv pip install --python 3.13 -r requirements.txt` komutunu çalıştır.
+
+**`System.IO.FileNotFoundException: Unable to find assembly`**
+→ `config/settings.json` içindeki `tekla_path` yanlış veya Tekla kurulu değil.
+
+**`FileNotFoundError: Configuration file not found: config\settings.json`**
+→ 4. adımı atlamışsın. `settings.sample.json` dosyasını `settings.json` olarak kopyala.
+
+**Python 3.14 ile çalışmıyor**
+→ `pythonnet` Python 3.14'ü desteklemiyor. `uv python install 3.13` ile 3.13 kur.
+
+---
+
+## Lisans
+
+MIT

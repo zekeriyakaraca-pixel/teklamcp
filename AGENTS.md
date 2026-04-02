@@ -1,64 +1,64 @@
-# Agent Guidelines for Tekla MCP Server
+# Tekla MCP Server — Ajan Kılavuzu
 
-This file defines basic rules for AI agents and human contributors working on the Tekla MCP Server.
+Bu dosya, Tekla MCP Server üzerinde çalışan yapay zeka ajanları ve insan katkıcılar için temel kuralları tanımlar.
 
-## Agent Behavior Expectations
-- Change only files directly related to the request
-- Don't add new dependencies without approval
-- Never use Tekla API in unit tests
-- Keep existing style and structure unless told otherwise
-- Make changes minimal, focused, and consistent
-- Never remove existing comments, keep them as they are unless explicitly instructed otherwise
-- Backwards compatibility is not required, changes can introduce breaking behavior for older versions
+## Ajan Davranış Beklentileri
+- Yalnızca istekle doğrudan ilgili dosyaları değiştir
+- Onay olmadan yeni bağımlılık ekleme
+- Unit testlerde Tekla API'si kullanma
+- Belirtilmedikçe mevcut stil ve yapıyı koru
+- Değişiklikleri minimal, odaklı ve tutarlı tut
+- Mevcut yorumları kaldırma — açıkça talimat verilmedikçe oldukları gibi bırak
+- Geriye dönük uyumluluk zorunlu değildir; değişiklikler eski sürümler için kırıcı davranış içerebilir
 
-## Essential Commands
+## Temel Komutlar
 
-### Package Management
-- Install: `uv pip install -r requirements.txt`
-- Add: `uv pip add <package>`
-- Update: `uv pip compile requirements.txt --upgrade`
+### Paket Yönetimi
+- Yükle: `uv pip install -r requirements.txt`
+- Ekle: `uv pip add <paket>`
+- Güncelle: `uv pip compile requirements.txt --upgrade`
 
-### Testing
-- All tests: `uv run pytest tests/`
-- Unit only: `uv run pytest tests/unit/`
-- Functional only: `uv run pytest tests/functional/`
-- Single test: `uv run pytest tests/unit/test_utils.py::test_log_function_call -xvs`
-- Single test class: `uv run pytest tests/unit/test_utils.py::TestLogFunctionCall -xvs`
-- Verbose: `uv run pytest -xvs tests/`
+### Test
+- Tüm testler: `uv run pytest tests/`
+- Yalnızca unit: `uv run pytest tests/unit/`
+- Yalnızca fonksiyonel: `uv run pytest tests/functional/`
+- Tek test: `uv run pytest tests/unit/test_utils.py::test_log_function_call -xvs`
+- Tek test sınıfı: `uv run pytest tests/unit/test_utils.py::TestLogFunctionCall -xvs`
+- Ayrıntılı: `uv run pytest -xvs tests/`
 
-⚠️ Functional tests modify Tekla models - run only in test environments.
+⚠️ Fonksiyonel testler Tekla modellerini değiştirir — yalnızca test ortamlarında çalıştır.
 
-### Test Naming Conventions
-- All test object names (parts, assemblies, UDAs) MUST start with `MCP_TEST_` prefix
-- This prevents conflicts with existing model objects and makes cleanup easy
+### Test Adlandırma Kuralları
+- Tüm test nesnesi adları (parçalar, montajlar, UDA'lar) `MCP_TEST_` öneki ile başlamalıdır
+- Bu, mevcut model nesneleriyle çakışmayı önler ve temizlemeyi kolaylaştırır
 
-## Debug Scripts
-- Use `/debug` folder for temporary scripts, experiments, and test code
-- These scripts are for development/debugging only
-- Do not commit files from this folder to version control
-- Production-ready code must be moved to proper locations
+## Hata Ayıklama Komut Dosyaları
+- Geçici komut dosyaları, denemeler ve test kodu için `/debug` klasörünü kullan
+- Bu komut dosyaları yalnızca geliştirme/hata ayıklama içindir
+- Bu klasördeki dosyaları sürüm kontrolüne commit etme
+- Üretime hazır kod uygun konumlara taşınmalıdır
 
-### Linting & Formatting
-- Check: `uv run ruff check .`
-- Fix: `uv run ruff check --fix .`
-- Format: `uv run ruff format .`
-- Type check: `uv run mypy .`
+### Lint ve Biçimlendirme
+- Kontrol: `uv run ruff check .`
+- Düzelt: `uv run ruff check --fix .`
+- Biçimlendir: `uv run ruff format .`
+- Tip kontrolü: `uv run mypy .`
 
-### Development
-- Run server: `uv run python src/tekla_mcp_server/mcp_server.py`
-- Build binary: `uv run pyinstaller src/tekla_mcp_server/mcp_server.py`
+### Geliştirme
+- Sunucuyu çalıştır: `uv run python src/tekla_mcp_server/mcp_server.py`
+- Binary oluştur: `uv run pyinstaller src/tekla_mcp_server/mcp_server.py`
 
-## Code Style
+## Kod Stili
 
-### Core Principles
-1. **Tekla API expertise** - Efficient interaction with Tekla Open API
-2. **Simplicity** - Readable solutions over complex ones
-3. **Pythonic** - Use built-ins and standard libraries
-4. **Concise docs** - Focus on "what" and "why", not "how"
+### Temel İlkeler
+1. **Tekla API uzmanlığı** — Tekla Open API ile verimli etkileşim
+2. **Sadelik** — Karmaşık çözümler yerine okunabilir çözümler
+3. **Pythonik** — Yerleşik yapıları ve standart kütüphaneleri kullan
+4. **Özlü belgeler** — "ne" ve "neden"e odaklan, "nasıl"a değil
 
-### Imports (Order Matters)
+### İçe Aktarma Sırası (Önemlidir)
 ```python
-# Standard library
+# Standart kütüphane
 import json
 import math
 import re
@@ -67,11 +67,11 @@ from pathlib import Path
 from typing import Any, ClassVar
 from collections.abc import Callable
 
-# Third-party
+# Üçüncü taraf
 from pydantic import BaseModel, Field, PrivateAttr
 from pydantic_core import PydanticCustomError
 
-# Local application
+# Yerel uygulama
 from tekla_mcp_server.init import logger
 from tekla_mcp_server.models import ReportProperty
 from tekla_mcp_server.utils import log_function_call, log_mcp_tool_call
@@ -83,14 +83,14 @@ from tekla_mcp_server.tekla.utils import wrap_model_objects
 from tekla_mcp_server.tekla.loader import Point, Beam, Identifier, Model
 from tekla_mcp_server.tekla.component_handlers import HandlerRegistry, LiftingAnchorsHandler
 
-# Providers (MCP tool definitions)
+# Sağlayıcılar (MCP araç tanımları)
 from tekla_mcp_server.providers.selection_provider import select_elements_by_filter
 from tekla_mcp_server.providers.view_provider import draw_elements_labels
 from tekla_mcp_server.providers.properties_provider import get_elements_properties
 from tekla_mcp_server.providers.components_provider import put_components
 from tekla_mcp_server.providers.operations_provider import cut_elements_with_zero_class_parts
 
-# Tools modules (actual implementations)
+# Araç modülleri (gerçek uygulamalar)
 from tekla_mcp_server.tools.selection import tool_select_elements_by_filter
 from tekla_mcp_server.tools.components import tool_put_components
 from tekla_mcp_server.tools.view import tool_draw_elements_labels
@@ -98,120 +98,120 @@ from tekla_mcp_server.tools.properties import tool_get_elements_properties
 from tekla_mcp_server.tools.operations import tool_cut_elements_with_zero_class_parts
 ```
 
-### Type Hints & Formatting
-- **Always** use type hints for parameters and returns
-- **Always** use f-strings: `f"Found {count} elements"`
-- Line length: 200 chars (configured in `pyproject.toml`)
-- Indentation: 4 spaces
-- Don't reformat existing code unless asked
+### Tip İpuçları ve Biçimlendirme
+- Parametreler ve dönüş değerleri için **her zaman** tip ipuçları kullan
+- **Her zaman** f-string kullan: `f"Found {count} elements"`
+- Satır uzunluğu: 200 karakter (`pyproject.toml`'de yapılandırılmış)
+- Girinti: 4 boşluk
+- Belirtilmedikçe mevcut kodu yeniden biçimlendirme
 
-### Naming
-- Variables/functions: `snake_case`
-- Classes: `PascalCase`
-- Constants: `UPPER_SNAKE_CASE`
-- Private: prefix with `_` or use `PrivateAttr()`
+### Adlandırma
+- Değişkenler/fonksiyonlar: `snake_case`
+- Sınıflar: `PascalCase`
+- Sabitler: `UPPER_SNAKE_CASE`
+- Özel: `_` öneki veya `PrivateAttr()` kullan
 
-### Error Handling
+### Hata Yönetimi
 ```python
 @log_mcp_tool_call
 def tool_function(...):
     try:
         return {"status": "success", ...}
     except Exception as e:
-        logger.exception("Operation failed")
+        logger.exception("İşlem başarısız oldu")
         return {"status": "error", "message": str(e)}
 ```
 
-### Pydantic Models
-- Inherit from `BaseModel`
-- Use `Field()` for metadata
-- `PrivateAttr` for non-serialized attributes
-- `@field_validator` for custom validation
-- `model_post_init()` for initialization logic
+### Pydantic Modeller
+- `BaseModel`'den kalıt al
+- Meta veri için `Field()` kullan
+- Serileştirilmemiş özellikler için `PrivateAttr`
+- Özel doğrulama için `@field_validator`
+- Başlatma mantığı için `model_post_init()`
 
-### Logging
-- Use `logger` from `init.py`
-- Levels: `debug()`, `info()`, `warning()`, `error()`
-- Decorators: `@log_function_call`, `@log_mcp_tool_call`
-- Configure via env vars: `TEKLA_MCP_LOG_LEVEL`, `TEKLA_MCP_LOG_FILE_PATH`
+### Loglama
+- `init.py`'den `logger` kullan
+- Seviyeler: `debug()`, `info()`, `warning()`, `error()`
+- Dekoratörler: `@log_function_call`, `@log_mcp_tool_call`
+- Ortam değişkenleriyle yapılandır: `TEKLA_MCP_LOG_LEVEL`, `TEKLA_MCP_LOG_FILE_PATH`
 
-### Tekla API Patterns
-- Use `TeklaModel` class from `tekla/model.py` (singleton pattern via `lru_cache`)
-- Use `TeklaModelObject` from `tekla/model_object.py` for individual objects
-- Always `model.commit_changes()` after modifications
-- Use `wrap_model_objects()` from `tekla/utils.py` for conversion
-- Use `SnapshotBuilder` from `tekla/snapshot_builder.py` for building snapshots (delegates from `to_snapshot()`)
+### Tekla API Örüntüleri
+- `tekla/model.py`'den `TeklaModel` sınıfını kullan (`lru_cache` ile singleton örüntüsü)
+- Bireysel nesneler için `tekla/model_object.py`'den `TeklaModelObject` kullan
+- Değişikliklerden sonra her zaman `model.commit_changes()` çağır
+- Dönüşüm için `tekla/utils.py`'den `wrap_model_objects()` kullan
+- Anlık görüntü oluşturmak için `tekla/snapshot_builder.py`'den `SnapshotBuilder` kullan (`to_snapshot()` üzerinden delege eder)
 
-### MCP Server Architecture
-- **Providers** (`providers/`) - MCP tool definitions with docstrings
-- **Tools** (`tools/`) - Actual implementation logic
-- Use `LocalProvider` for organizing tools into modules
-- Tool functions accept `dict[str, Any]` inputs (MCP sends JSON)
-- Use `_to_filter_option()` helper to convert dicts to Pydantic models
+### MCP Sunucu Mimarisi
+- **Sağlayıcılar** (`providers/`) — Belgelerle birlikte MCP araç tanımları
+- **Araçlar** (`tools/`) — Gerçek uygulama mantığı
+- Araçları modüller halinde düzenlemek için `LocalProvider` kullan
+- Araç fonksiyonları `dict[str, Any]` girdisi alır (MCP JSON gönderir)
+- Sözlükleri Pydantic modellerine dönüştürmek için `_to_filter_option()` yardımcısını kullan
 
-### MCP Resources (Read-Only Data)
-Resources provide discovery/metadata, not actions:
-| Resource | Purpose |
-|----------|---------|
-| `tekla://components` | List all available components |
-| `tekla://components/{key}` | Get properties for a component |
-| `tekla://macros` | List available Tekla macros |
-| `tekla://phases` | List all phases in the model |
-| `tekla://filters/selection` | List available selection filters |
-| `tekla://filters/view` | List available view filters |
-| `tekla://connection_status` | Current Tekla connection status |
-| `project://requirements` | Project requirements and conventions |
+### MCP Kaynakları (Salt Okunur Veri)
+Kaynaklar eylem değil, keşif/meta veri sağlar:
+| Kaynak | Amaç |
+|--------|------|
+| `tekla://components` | Mevcut tüm bileşenleri listele |
+| `tekla://components/{key}` | Bir bileşenin özelliklerini al |
+| `tekla://macros` | Mevcut Tekla makrolarını listele |
+| `tekla://phases` | Modeldeki tüm aşamaları listele |
+| `tekla://filters/selection` | Mevcut seçim filtrelerini listele |
+| `tekla://filters/view` | Mevcut görünüm filtrelerini listele |
+| `tekla://connection_status` | Geçerli Tekla bağlantı durumu |
+| `project://requirements` | Proje gereksinimleri ve kuralları |
 
-### MCP Tools (Actions)
-Tools perform operations that may mutate state:
-| Provider | Tools |
-|----------|-------|
-| `selection_provider` | `select_elements_by_filter`, `select_elements_by_guid`, etc. |
-| `view_provider` | `draw_elements_labels`, `zoom_to_selection`, etc. |
-| `properties_provider` | `get_elements_properties`, `set_elements_properties`, etc. |
+### MCP Araçları (Eylemler)
+Araçlar durumu değiştirebilen işlemler gerçekleştirir:
+| Sağlayıcı | Araçlar |
+|-----------|---------|
+| `selection_provider` | `select_elements_by_filter`, `select_elements_by_guid`, vb. |
+| `view_provider` | `draw_elements_labels`, `zoom_to_selection`, vb. |
+| `properties_provider` | `get_elements_properties`, `set_elements_properties`, vb. |
 | `components_provider` | `put_components`, `remove_components` |
 | `operations_provider` | `cut_elements_with_zero_class_parts`, `run_macro` |
 
-## Project Structure
+## Proje Yapısı
 ```
 tekla_mcp_server/
-├── src/tekla_mcp_server/     # Source code (package)
+├── src/tekla_mcp_server/          # Kaynak kod (paket)
 │   ├── __init__.py
-│   ├── config.py              # Configuration management (lru_cache for caching)
-│   ├── embeddings.py          # Embedding model loading and text normalization
-│   ├── init.py                # Logging, DLL loading
-│   ├── mcp_server.py          # Main server (registers providers and resources)
-│   ├── models.py              # Data models, enums, filter options
-│   ├── utils.py               # Decorators and utilities (response helpers)
-│   ├── providers/             # MCP tool definitions (docstrings + orchestration)
+│   ├── config.py                  # Yapılandırma yönetimi (önbellekleme için lru_cache)
+│   ├── embeddings.py              # Gömme modeli yükleme ve metin normalleştirme
+│   ├── init.py                    # Loglama, DLL yükleme
+│   ├── mcp_server.py              # Ana sunucu (sağlayıcıları ve kaynakları kaydeder)
+│   ├── models.py                  # Veri modelleri, enum'lar, filtre seçenekleri
+│   ├── utils.py                   # Dekoratörler ve yardımcılar (yanıt yardımcıları)
+│   ├── providers/                 # MCP araç tanımları (belgeler + düzenleme)
 │   │   ├── __init__.py
 │   │   ├── selection_provider.py
 │   │   ├── view_provider.py
 │   │   ├── properties_provider.py
 │   │   ├── components_provider.py
 │   │   └── operations_provider.py
-│   ├── tools/                 # Tool implementations (business logic)
-│   │   ├── selection.py       # Selection logic
-│   │   ├── components.py      # Component operations
-│   │   ├── properties.py      # Property operations
-│   │   ├── view.py           # View operations
-│   │   └── operations.py     # Boolean cuts, macros
-│   └── tekla/                 # Tekla-specific modules
+│   ├── tools/                     # Araç uygulamaları (iş mantığı)
+│   │   ├── selection.py           # Seçim mantığı
+│   │   ├── components.py          # Bileşen işlemleri
+│   │   ├── properties.py          # Özellik işlemleri
+│   │   ├── view.py                # Görünüm işlemleri
+│   │   └── operations.py          # Boolean kesimler, makrolar
+│   └── tekla/                     # Tekla'ya özgü modüller
 │       ├── __init__.py
-│       ├── loader.py          # Tekla DLL loading (pythonnet)
-│       ├── model.py           # Tekla Model wrapper (singleton via lru_cache)
-│       ├── model_object.py    # Tekla ModelObject wrappers
-│       ├── snapshot_builder.py # Snapshot extraction (builds PartSnapshot/AssemblySnapshot)
-│       ├── utils.py           # Tekla API helpers
-│       ├── template_attrs_parser.py  # Template attribute parsing with semantic search
-│       └── component_handlers.py     # Component handler plugins (LiftingAnchorsHandler, etc.)
-├── config/                    # Configuration JSON files
+│       ├── loader.py              # Tekla DLL yükleme (pythonnet)
+│       ├── model.py               # Tekla Model sarmalayıcı (lru_cache ile singleton)
+│       ├── model_object.py        # Tekla ModelObject sarmalayıcıları
+│       ├── snapshot_builder.py    # Anlık görüntü çıkarımı (PartSnapshot/AssemblySnapshot oluşturur)
+│       ├── utils.py               # Tekla API yardımcıları
+│       ├── template_attrs_parser.py  # Semantik arama ile şablon özellik ayrıştırma
+│       └── component_handlers.py     # Bileşen işleyici eklentileri (LiftingAnchorsHandler, vb.)
+├── config/                        # Yapılandırma JSON dosyaları
 │   ├── settings.sample.json
 │   ├── element_types.sample.json
 │   ├── semantic_overrides.sample.json
 │   └── base_components.sample.json
 ├── tests/
-│   ├── unit/                  # Unit tests
+│   ├── unit/                      # Unit testler
 │   │   ├── __init__.py
 │   │   ├── test_config.py
 │   │   ├── test_init.py
@@ -221,37 +221,37 @@ tekla_mcp_server/
 │   │   ├── test_tekla_template_attrs_parser.py
 │   │   ├── test_tekla_utils.py
 │   │   └── test_component_handlers.py
-│   └── functional/            # Functional tests
+│   └── functional/                # Fonksiyonel testler
 │       ├── __init__.py
 │       └── test_mcp_server.py
-├── .env.example               # Environment variables template
+├── .env.example                   # Ortam değişkenleri şablonu
 ├── pyproject.toml
 ├── requirements.txt
 └── requirements-dev.txt
 ```
 
-## Configuration
-- Settings in `config/settings.json`
-- Use `get_config()` from `config.py` for centralized access
-- Environment variables: `TEKLA_MCP_LOG_LEVEL`, `TEKLA_MCP_LOG_FILE_PATH`, `TEKLA_MCP_CONFIG_DIR`
+## Yapılandırma
+- Ayarlar `config/settings.json` içinde
+- Merkezi erişim için `config.py`'den `get_config()` kullan
+- Ortam değişkenleri: `TEKLA_MCP_LOG_LEVEL`, `TEKLA_MCP_LOG_FILE_PATH`, `TEKLA_MCP_CONFIG_DIR`
 
-## Unit Test Guidelines
-- Never mock Tekla API - use pure functions when possible
-- Use `unittest.mock.MagicMock` for external dependencies
-- Test files mirror module structure: `test_<module_name>.py`
-- Use `@pytest.mark.parametrize` for multiple test cases
-- Avoid Tekla imports in unit tests - use mocks
+## Unit Test Kılavuzu
+- Tekla API'sini asla mock'lama — mümkün olduğunda saf fonksiyonlar kullan
+- Dış bağımlılıklar için `unittest.mock.MagicMock` kullan
+- Test dosyaları modül yapısını yansıtır: `test_<modül_adı>.py`
+- Birden fazla test durumu için `@pytest.mark.parametrize` kullan
+- Unit testlerde Tekla içe aktarmalarını kullanma — mock kullan
 
-## Component Handler System
-The component handler system provides a plugin-like architecture for specialized Tekla components.
+## Bileşen İşleyici Sistemi
+Bileşen işleyici sistemi, özel Tekla bileşenleri için eklenti benzeri bir mimari sağlar.
 
-### Handler Structure
-- Handlers are defined in `tekla/component_handlers.py`
-- Base handler class: None (duck typing with `tekla_name` property)
-- Registry auto-discovers handlers from `config/base_components.json`
+### İşleyici Yapısı
+- İşleyiciler `tekla/component_handlers.py` içinde tanımlanır
+- Temel işleyici sınıfı: Yok (duck typing ile `tekla_name` özelliği)
+- Registry, işleyicileri `config/base_components.json` üzerinden otomatik keşfeder
 
-### Adding a New Handler
-1. Create handler class with `tekla_name` property:
+### Yeni İşleyici Ekleme
+1. `tekla_name` özelliğiyle işleyici sınıfı oluştur:
 ```python
 @register_handler
 class MyComponentHandler:
@@ -260,15 +260,15 @@ class MyComponentHandler:
         return "My Component"
     
     def pre_process(self, component, selected_object) -> dict:
-        # Called before component insertion
+        # Bileşen yerleştirmeden önce çağrılır
         return {"context": "data"}
     
     def post_process(self, component, selected_object, count, context) -> int:
-        # Called after component insertion
+        # Bileşen yerleştirmeden sonra çağrılır
         return count
 ```
 
-2. Register in config:
+2. Yapılandırmaya kaydet:
 ```json
 {
   "my_component": {
@@ -282,9 +282,9 @@ class MyComponentHandler:
 }
 ```
 
-## Before Committing
-1. Check: `uv run ruff check .`
-2. Fix: `uv run ruff check --fix .`
-3. Format: `uv run ruff format .`
-4. Type check: `uv run mypy .`
-5. Run tests: `uv run pytest tests/`
+## Commit Öncesi Kontrol Listesi
+1. Kontrol et: `uv run ruff check .`
+2. Düzelt: `uv run ruff check --fix .`
+3. Biçimlendir: `uv run ruff format .`
+4. Tip kontrolü: `uv run mypy .`
+5. Testleri çalıştır: `uv run pytest tests/`
